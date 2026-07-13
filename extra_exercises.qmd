@@ -4,16 +4,45 @@ format: html
 editor: visual
 ---
 
+# About the data
+
+These exercises use the data file `gov_env_2015.csv`. This data set includes environmental and government data on 150+ countries for 2015. The original data comes from https://www.gu.se/en/quality-government/qog-data, but variables have been renamed and some values may have been changed.
+
+Each row in the data set is a country-year observation.
+
+Variables:
+
+- **country**: name of the country
+- **region**: region that the country is in
+- **population**
+- **electoral_comp**: categorical measure of what type of elections a country has:
+  1.  No elections
+  2.  Single-party elections
+  3.  Non-democratic multi-party elections
+  4.  Democratic elections
+- **globalization**: a scale of economic, political, and social globalization with a theoretical range of 1 to 100. Higher values indicate greater globalization.
+- **monarchy**: binary indicator of whether a country is a monarchy (monarchy = 1)
+- **presidential**: binary indicator of whether a country is a presidential system (presidential = 1)
+- **democracy**: binary indicator of whether a country is a democracy (democracy = 1)
+- **gdp_per_capita**: real GDP per capita in 2011 US dollars
+- **rain_avg**: average annual rainfall in mm
+- **temp_avg**: average annual temperature in degrees Celsius
+- **climate_laws_policies**: number of climate change laws and policies enacted
+- **co2_per_capita**: CO2 emissions in metric tons per capita
+- **co2_growth_rate**: adjusted rate of growth in CO2 emissions
+- **ag_land_pct**: % of land used for agriculture
+- **forest_land_pct**: % of land that is forest
+- **nat_disaster_damage**: estimated damage from natural disasters, in thousands of US dollars
+- **nat_disaster_affected**: number of people affected by natural disasters
+- **nat_disaster_deaths**: number of deaths from natural disasters
+- **nat_disaster_n**: number of natural disasters
+
 # Reading data
 
-Using `read_csv` to read the "gov_env_2015.csv" data set inside the "data" folder. Save it in a variable called `govenv`.
+Using `read_csv` to read the "gov_env_2015.csv" data set inside the "data" folder. Save it in a variable called `govenv`. Make sure to also load any R packages you will need.
 
 ```{r}
-govenv <- read_csv("data/gov_env_2015.csv")
 
-dim(govenv)
-
-View(govenv)
 ```
 
 # Subseting data 1
@@ -21,8 +50,7 @@ View(govenv)
 Select the columns that start with "co2".
 
 ```{r}
-govenv %>% 
-  select(starts_with("co2"))
+
 ```
 
 # Subseting data 2
@@ -30,12 +58,7 @@ govenv %>%
 What are the countries with higher than average `co2_per_capita`?
 
 ```{r}
-# average co2_per_capita
-# get the countries
 
-govenv %>% 
-  filter(co2_per_capita > mean(co2_per_capita, na.rm = T)) %>% 
-  select(country)
 ```
 
 # Subseting data 3
@@ -43,21 +66,7 @@ govenv %>%
 What is the most common region for the countries that are not democracies?
 
 ```{r}
-# get only the countries (rows) that are not democracies
-table(govenv$democracy)
-govenv %>% 
-  filter(democracy == 0)
 
-# get the most common region (count for the region)
-names(govenv)
-govenv %>% 
-  count(region)
-
-govenv %>% 
-  filter(democracy == 0) %>% 
-  count(region) %>% 
-  arrange(desc(n)) %>% 
-  slice(1)
 ```
 
 # Mutating data
@@ -65,17 +74,6 @@ govenv %>%
 Replace the missing values in `climate_laws_policies` by "missing".
 
 ```{r}
-table(govenv$climate_laws_policies, useNA = "ifany")
-# NA -> "missing"
-
-View(govenv)
-
-govenv %>% 
-  mutate(climate_laws_policies = ifelse(is.na(climate_laws_policies), "missing", climate_laws_policies)) %>% 
-  count(climate_laws_policies)
-
-govenv %>% 
-  mutate(climate_laws_policies = replace_na(climate_laws_policies, 99))
 
 ```
 
@@ -84,36 +82,29 @@ govenv %>%
 Calculate the mean and the standard deviation of all numerical columns.
 
 ```{r}
-govenv %>% 
-  summarise(
-    across(
-      where(is.numeric), 
-      list(
-        avg = ~ mean(.x, na.rm = T),
-        std = ~ sd(.x, na.rm = T)
-        )
-      )
-    )
+
 ```
 
 # Grouping
 
 Calculate the median and the variance of `co2_per_capita` by whether the country has `climate_laws_policies` or not.
 
+```{r}
+
+```
+
 # Proportions
 
 What proportions of countries are a presidential regime?
+
+```{r}
+
+```
 
 # Proportions by group
 
 What proportion of countries with different numbers of climate laws and policies are democracies versus non-democracies?
 
 ```{r}
-table(govenv$democracy)
-34/66
-govenv %>% 
-  filter(!is.na(climate_laws_policies)) %>% 
-  count(democracy, climate_laws_policies) %>% 
-  group_by(democracy) %>% 
-  mutate(prop = n / sum(n))
+
 ```
